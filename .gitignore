@@ -1,0 +1,13 @@
+# Neovim generated files
+tags
+test.sh
+.luarc.json
+
+nvim/plugin/
+nvim/.netrwhist
+nvim/lazy-lock.json
+nvim/undo/
+nvim/swap/
+nvim/shada/
+nvim/session/
+
