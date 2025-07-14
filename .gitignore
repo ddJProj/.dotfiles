@@ -1,3 +1,10 @@
+
+
+# Ignore all .ignore folders recursively
+**/.ignore/
+
+
+
 # Neovim generated files
 tags
 test.sh
