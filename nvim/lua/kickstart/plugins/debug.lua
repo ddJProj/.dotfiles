@@ -42,6 +42,7 @@ return {
         'delve',
         "codelldb",
         "cpptools",
+        'js-debug-adapter',
       },
     }
 
@@ -94,6 +95,87 @@ return {
 
     -- Install golang specific config
     require('dap-go').setup()
+
+
+    -- Add TypeScript/JavaScript configurations
+dap.adapters['pwa-node'] = {
+  type = 'server',
+  host = 'localhost',
+  port = '${port}',
+  executable = {
+    command = 'node',
+    args = { vim.fn.stdpath('data') .. '/mason/packages/js-debug-adapter/js-debug/src/dapDebugServer.js', '${port}' },
+  }
+}
+
+dap.configurations.javascript = {
+  {
+    type = 'pwa-node',
+    request = 'launch',
+    name = 'Launch file',
+    program = '${file}',
+    cwd = '${workspaceFolder}',
+  },
+  {
+    type = 'pwa-node',
+    request = 'attach',
+    name = 'Attach',
+    processId = require('dap.utils').pick_process,
+    cwd = '${workspaceFolder}',
+  },
+  {
+    type = 'pwa-node',
+    request = 'launch',
+    name = 'Debug Jest Tests',
+    -- trace = true, -- include debugger info
+    runtimeExecutable = 'node',
+    runtimeArgs = {
+      './node_modules/.bin/jest',
+      '--runInBand',
+    },
+    rootPath = '${workspaceFolder}',
+    cwd = '${workspaceFolder}',
+    console = 'integratedTerminal',
+    internalConsoleOptions = 'neverOpen',
+  }
+}
+
+dap.configurations.typescript = {
+  {
+    type = 'pwa-node',
+    request = 'launch',
+    name = 'Launch file',
+    runtimeExecutable = 'node',
+    runtimeArgs = { '--loader', 'tsx' },
+    program = '${file}',
+    cwd = '${workspaceFolder}',
+    sourceMaps = true,
+    protocol = 'inspector',
+    console = 'integratedTerminal',
+    resolveSourceMapLocations = {
+      "${workspaceFolder}/**",
+      "!**/node_modules/**"
+    },
+  },
+  {
+    type = 'pwa-node',
+    request = 'launch',
+    name = 'Debug Vitest Tests',
+    runtimeExecutable = 'node',
+    runtimeArgs = {
+      './node_modules/.bin/vitest',
+      '--run'
+    },
+    rootPath = '${workspaceFolder}',
+    cwd = '${workspaceFolder}',
+    console = 'integratedTerminal',
+    internalConsoleOptions = 'neverOpen',
+  }
+}
+
+    -- For TSX/JSX files
+    dap.configurations.typescriptreact = dap.configurations.typescript
+    dap.configurations.javascriptreact = dap.configurations.javascript
 
     -- Install rust / codelldb specific config
     dap.adapters.codelldb = {
